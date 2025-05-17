@@ -1,0 +1,24 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    args: ['-c', 'ls -R']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/mywebsitebot-dkju/zoni', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/mywebsitebot-dkju/zoni']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'zoni',
+        '--image', 'gcr.io/mywebsitebot-dkju/zoni',
+        '--platform', 'managed',
+        '--region', 'us-central1',
+        '--allow-unauthenticated'
+      ]
